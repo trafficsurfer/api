@@ -12,6 +12,7 @@ uvicorn = "^0.23.2"
 sqlalchemy = "^2.0.21"
 python-multipart = "^0.0.6"
 ultralytics = "^8.0.217"
+aiofiles = "^23.2.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.9.1"
