@@ -1,9 +1,8 @@
 """FastAPI router module."""
-from fastapi import FastAPI, UploadFile, HTTPException
+from fastapi import FastAPI, UploadFile, HTTPException, BackgroundTasks
 from pathlib import Path
 from ultralytics import YOLO
 from tempfile import NamedTemporaryFile
-import asyncio
 from . import schemas
 
 app = FastAPI()
@@ -12,7 +11,7 @@ model = YOLO("yolov8n.pt")
 storage = {}
 
 
-async def process_video(filename: str, id: str):
+def process_video(filename: str, id: str):
     try:
         storage[id] = schemas.VideoDetection()
         results = model(filename, stream=True)
@@ -31,20 +30,19 @@ async def process_video(filename: str, id: str):
                 schemas.Frame(objects=objects, num_frame=num_frame)
             )
     finally:
-        Path.unlink(filename)
+        Path(filename).unlink()
 
 
-@app.post("/detection/")
-async def upload_video(file: UploadFile, id: str):
+@app.post("/detection/{id}")
+async def upload_video(file: UploadFile, id: str, bg: BackgroundTasks):
     """Run CV on video."""
     try:
         suffix = Path(file.filename).suffix
         with NamedTemporaryFile("wb", delete=False, suffix=suffix) as temp:
             contents = await file.read()
             temp.write(contents)
-            asyncio.create_task(process_video(temp.name, id))
-    except Exception as e:
-        print(e)
+            bg.add_task(process_video, temp.name, id)
+    except Exception:
         raise HTTPException(500)
     finally:
         await file.close()
