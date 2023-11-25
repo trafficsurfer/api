@@ -1,14 +1,17 @@
 """FastAPI router module."""
 from fastapi import FastAPI, UploadFile, HTTPException, BackgroundTasks
+from fastapi.middleware.gzip import GZipMiddleware
 from pathlib import Path
 from ultralytics import YOLO
 from tempfile import NamedTemporaryFile
 from . import schemas
 
 app = FastAPI()
+app.add_middleware(GZipMiddleware)
+
 model = YOLO("yolov8n.pt")
 
-storage = {}
+storage: dict[schemas.VideoDetection] = {}
 
 
 def process_video(filename: str, id: str):
@@ -26,9 +29,10 @@ def process_video(filename: str, id: str):
                         coords=result.boxes.xyxy[i].tolist(),
                     )
                 )
-            storage[id].frames.append(
-                schemas.Frame(objects=objects, num_frame=num_frame)
-            )
+            if len(objects):
+                storage[id].frames.append(
+                    schemas.Frame(objects=objects, num_frame=num_frame)
+                )
     finally:
         Path(filename).unlink()
 
@@ -51,8 +55,10 @@ async def upload_video(file: UploadFile, id: str, bg: BackgroundTasks):
 
 
 @app.get("/detection/{id}")
-async def get_video(id: str) -> schemas.VideoDetection:
+async def get_video(id: str, skip: int = 0) -> schemas.VideoDetection:
     """Get video status by id."""
     if id not in storage:
         raise HTTPException(404)
-    return storage.get(id)
+    detection = storage.get(id)
+    frames_page = [f for f in detection.frames if f.num_frame > skip]
+    return schemas.VideoDetection(frames=frames_page)
