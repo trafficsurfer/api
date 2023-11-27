@@ -22,3 +22,4 @@ class VideoDetection(BaseModel):
     """Detected video."""
 
     frames: list[Frame] = []
+    total_frames: int
