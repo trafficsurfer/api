@@ -9,6 +9,19 @@ permissions:
   packages: write
 
 jobs:
+  front:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout your repository using git
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v4
+      - run: cd front && npm ci
+      - run: cd front && npm run build
+      - uses: actions/upload-artifact@v3
+        with:
+          name: front
+          path: front/dist
+
   docker:
     runs-on: ubuntu-latest
     steps:

@@ -1,0 +1,24 @@
+{
+  "name": "trafficsurfer.github.io",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.3.1",
+    "@astrojs/solid-js": "^3.0.2",
+    "@astrojs/tailwind": "^5.0.2",
+    "@fortawesome/free-solid-svg-icons": "^6.4.2",
+    "astro": "^3.5.4",
+    "nanoid": "^5.0.3",
+    "solid-fa": "^0.2.0",
+    "solid-js": "^1.8.5",
+    "tailwindcss": "^3.3.5",
+    "typescript": "^5.2.2"
+  }
+}
