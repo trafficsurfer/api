@@ -4,7 +4,8 @@ services:
   api:
     build: .
     volumes:
-      - ./src/pyback:/app/app
+      - ./src/trafficsurfer_api:/app/app
+      - ./front/dist:/app/front/dist
     command: uvicorn app.main:app --host 0.0.0.0 --port 80 --reload
     ports:
       - 8001:80

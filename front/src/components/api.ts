@@ -6,7 +6,7 @@ export type DetectionBox = {
 export type Frame = { objects: DetectionBox[] };
 export type VideoDetection = { frames: Frame[]; total_frames: number };
 
-const base = 'http://localhost:8000';
+const base = '';
 const detectionEndpoint = (id: string) => `${base}/detection/${id}`;
 
 async function safeFetch(...args: Parameters<typeof fetch>) {

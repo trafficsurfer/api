@@ -2,6 +2,7 @@
 from fastapi import FastAPI, UploadFile, HTTPException, BackgroundTasks
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 from ultralytics import YOLO
 from ultralytics.data.loaders import LoadImages
@@ -9,6 +10,7 @@ from tempfile import NamedTemporaryFile
 from . import schemas
 
 app = FastAPI()
+app.mount("/app", StaticFiles(directory="front/dist", html=True), name="static")
 app.add_middleware(GZipMiddleware)
 app.add_middleware(CORSMiddleware, allow_origins=["*"])
 
